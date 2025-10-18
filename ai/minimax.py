@@ -56,7 +56,7 @@ def actions(state):
     moves = []
     for row in range(3):
         for col in range(3):
-            if state[row][col] is None:
+            if state[row][col] == '_':
                 moves.append((row, col))
     
     return moves
@@ -69,12 +69,12 @@ def result(state, move, sign):
 def undo_move(state, move): 
     row, col = move
 
-    state[row][col] = None
+    state[row][col] = '_'
 
 def is_draw(state):
     for row in range(3):
         for col in range(3):
-            if state[row][col] is None:
+            if state[row][col] == '_':
                 return False
             
     return True
