@@ -10,6 +10,7 @@ class TicTacToeUI:
         self.root.title("Tic-Tac-Toe with AI")
         self.root.geometry("800x700")
         self.root.resizable(False, False)
+        self.root.configure(bg="#f8f9fa")  # Light gray background
         
         self.reset_game_state()
         self.show_mode_selection()
@@ -31,16 +32,24 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        title = tk.Label(self.root, text="Tic-Tac-Toe with AI", 
-                        font=("Arial", 28, "bold"), fg="#2c3e50")
-        title.pack(pady=40)
+        # Main container frame to center content
+        main_frame = tk.Frame(self.root, bg="#f8f9fa")
+        main_frame.pack(expand=True, fill="both")
         
-        subtitle = tk.Label(self.root, text="Select Game Mode", 
-                           font=("Arial", 16), fg="#7f8c8d")
-        subtitle.pack(pady=10)
+        # Center frame for content
+        center_frame = tk.Frame(main_frame, bg="#f8f9fa")
+        center_frame.place(relx=0.5, rely=0.5, anchor="center")
         
-        button_frame = tk.Frame(self.root)
-        button_frame.pack(pady=30)
+        title = tk.Label(center_frame, text="Tic-Tac-Toe with AI", 
+                        font=("Arial", 28, "bold"), fg="#2c3e50", bg="#f8f9fa")
+        title.pack(pady=(0, 20))
+        
+        subtitle = tk.Label(center_frame, text="Select Game Mode", 
+                           font=("Arial", 16), fg="#7f8c8d", bg="#f8f9fa")
+        subtitle.pack(pady=(0, 30))
+        
+        button_frame = tk.Frame(center_frame, bg="#f8f9fa")
+        button_frame.pack()
         
         modes = [
             ("Human vs Human", "HvH"),
@@ -49,10 +58,12 @@ class TicTacToeUI:
         ]
         
         for text, mode in modes:
-            btn = tk.Button(button_frame, text=text, font=("Arial", 14),
-                           width=20, height=2, bg="#3498db", fg="white",
-                           activebackground="#2980b9", cursor="hand2",
-                           command=lambda m=mode: self.select_mode(m))
+            btn = tk.Label(button_frame, text=text, font=("Arial", 14),
+                          width=20, height=2, bg="#3498db", fg="white",
+                          cursor="hand2", relief="raised", borderwidth=2)
+            btn.bind("<Button-1>", lambda e, m=mode: self.select_mode(m))
+            btn.bind("<Enter>", lambda e: e.widget.config(bg="#2980b9"))
+            btn.bind("<Leave>", lambda e: e.widget.config(bg="#3498db"))
             btn.pack(pady=10)
     
     def select_mode(self, mode):
@@ -68,108 +79,156 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        title = tk.Label(self.root, text="Who Plays First?", 
-                        font=("Arial", 24, "bold"), fg="#2c3e50")
-        title.pack(pady=50)
+        # Main container frame to center content
+        main_frame = tk.Frame(self.root, bg="#f8f9fa")
+        main_frame.pack(expand=True, fill="both")
+        
+        # Center frame for content
+        center_frame = tk.Frame(main_frame, bg="#f8f9fa")
+        center_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        title = tk.Label(center_frame, text="Who Plays First?", 
+                        font=("Arial", 24, "bold"), fg="#2c3e50", bg="#f8f9fa")
+        title.pack(pady=(0, 30))
         
         first_var = tk.StringVar(value="X")
         
-        tk.Radiobutton(self.root, text="Player 1 (X)", variable=first_var, 
-                       value="X", font=("Arial", 14)).pack(pady=10)
-        tk.Radiobutton(self.root, text="Player 2 (O)", variable=first_var, 
-                       value="O", font=("Arial", 14)).pack(pady=10)
+        tk.Radiobutton(center_frame, text="Player 1 (X)", variable=first_var, 
+                       value="X", font=("Arial", 14), bg="#f8f9fa", fg="#2c3e50").pack(pady=10)
+        tk.Radiobutton(center_frame, text="Player 2 (O)", variable=first_var, 
+                       value="O", font=("Arial", 14), bg="#f8f9fa", fg="#2c3e50").pack(pady=10)
         
-        start_btn = tk.Button(self.root, text="Start Game", font=("Arial", 14, "bold"),
-                             bg="#27ae60", fg="white", width=15, height=2,
-                             command=lambda: self.start_hvh_game(first_var.get()))
+        start_btn = tk.Label(center_frame, text="Start Game", font=("Arial", 14, "bold"),
+                            bg="#27ae60", fg="white", width=15, height=2,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        start_btn.bind("<Button-1>", lambda e: self.start_hvh_game(first_var.get()))
+        start_btn.bind("<Enter>", lambda e: e.widget.config(bg="#229954"))
+        start_btn.bind("<Leave>", lambda e: e.widget.config(bg="#27ae60"))
         start_btn.pack(pady=30)
         
-        tk.Button(self.root, text="Back", font=("Arial", 10),
-                 command=self.show_mode_selection).pack()
+        back_btn = tk.Label(center_frame, text="Back", font=("Arial", 12),
+                            bg="#6c757d", fg="white", width=10, height=1,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        back_btn.bind("<Button-1>", lambda e: self.show_mode_selection())
+        back_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5a6268"))
+        back_btn.bind("<Leave>", lambda e: e.widget.config(bg="#6c757d"))
+        back_btn.pack()
     
     def show_human_ai_config(self):
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        title = tk.Label(self.root, text="Human vs AI Configuration", 
-                        font=("Arial", 24, "bold"), fg="#2c3e50")
-        title.pack(pady=30)
+        # Main container frame to center content
+        main_frame = tk.Frame(self.root, bg="#f8f9fa")
+        main_frame.pack(expand=True, fill="both")
         
-        first_label = tk.Label(self.root, text="Who plays first?", 
-                              font=("Arial", 14), fg="#34495e")
-        first_label.pack(pady=10)
+        # Center frame for content
+        center_frame = tk.Frame(main_frame, bg="#f8f9fa")
+        center_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        title = tk.Label(center_frame, text="Human vs AI Configuration", 
+                        font=("Arial", 24, "bold"), fg="#2c3e50", bg="#f8f9fa")
+        title.pack(pady=(0, 20))
+        
+        first_label = tk.Label(center_frame, text="Who plays first?", 
+                              font=("Arial", 14), fg="#34495e", bg="#f8f9fa")
+        first_label.pack(pady=(0, 10))
         
         first_var = tk.StringVar(value="Human")
-        tk.Radiobutton(self.root, text="Human", variable=first_var, 
-                      value="Human", font=("Arial", 12)).pack()
-        tk.Radiobutton(self.root, text="AI", variable=first_var, 
-                      value="AI", font=("Arial", 12)).pack()
+        tk.Radiobutton(center_frame, text="Human", variable=first_var, 
+                      value="Human", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
+        tk.Radiobutton(center_frame, text="AI", variable=first_var, 
+                      value="AI", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
         
-        algo_label = tk.Label(self.root, text="Select AI Algorithm", 
-                             font=("Arial", 14), fg="#34495e")
-        algo_label.pack(pady=20)
+        algo_label = tk.Label(center_frame, text="Select AI Algorithm", 
+                             font=("Arial", 14), fg="#34495e", bg="#f8f9fa")
+        algo_label.pack(pady=(20, 10))
         
         algo_var = tk.StringVar(value="alphabeta")
-        tk.Radiobutton(self.root, text="Alpha-Beta Pruning", variable=algo_var, 
-                      value="alphabeta", font=("Arial", 12)).pack()
-        tk.Radiobutton(self.root, text="Minimax", variable=algo_var, 
-                      value="minimax", font=("Arial", 12)).pack()
+        tk.Radiobutton(center_frame, text="Alpha-Beta Pruning", variable=algo_var, 
+                      value="alphabeta", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
+        tk.Radiobutton(center_frame, text="Minimax", variable=algo_var, 
+                      value="minimax", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
         
-        start_btn = tk.Button(self.root, text="Start Game", font=("Arial", 14, "bold"),
-                             bg="#27ae60", fg="white", width=15, height=2,
-                             command=lambda: self.start_hvai_game(first_var.get(), algo_var.get()))
+        start_btn = tk.Label(center_frame, text="Start Game", font=("Arial", 14, "bold"),
+                            bg="#27ae60", fg="white", width=15, height=2,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        start_btn.bind("<Button-1>", lambda e: self.start_hvai_game(first_var.get(), algo_var.get()))
+        start_btn.bind("<Enter>", lambda e: e.widget.config(bg="#229954"))
+        start_btn.bind("<Leave>", lambda e: e.widget.config(bg="#27ae60"))
         start_btn.pack(pady=30)
         
-        tk.Button(self.root, text="Back", font=("Arial", 10),
-                 command=self.show_mode_selection).pack()
+        back_btn = tk.Label(center_frame, text="Back", font=("Arial", 12),
+                            bg="#6c757d", fg="white", width=10, height=1,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        back_btn.bind("<Button-1>", lambda e: self.show_mode_selection())
+        back_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5a6268"))
+        back_btn.bind("<Leave>", lambda e: e.widget.config(bg="#6c757d"))
+        back_btn.pack()
     
     def show_ai_vs_ai_config(self):
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        title = tk.Label(self.root, text="AI vs AI Configuration", 
-                        font=("Arial", 24, "bold"), fg="#2c3e50")
-        title.pack(pady=30)
+        # Main container frame to center content
+        main_frame = tk.Frame(self.root, bg="#f8f9fa")
+        main_frame.pack(expand=True, fill="both")
         
-        ai1_frame = tk.LabelFrame(self.root, text="AI 1 (X)", font=("Arial", 12, "bold"),
-                                 padx=20, pady=15)
-        ai1_frame.pack(pady=10, padx=50, fill="x")
+        # Center frame for content
+        center_frame = tk.Frame(main_frame, bg="#f8f9fa")
+        center_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        title = tk.Label(center_frame, text="AI vs AI Configuration", 
+                        font=("Arial", 24, "bold"), fg="#2c3e50", bg="#f8f9fa")
+        title.pack(pady=(0, 20))
+        
+        ai1_frame = tk.LabelFrame(center_frame, text="AI 1 (X)", font=("Arial", 12, "bold"),
+                                 padx=20, pady=15, bg="#f8f9fa", fg="#2c3e50")
+        ai1_frame.pack(pady=10, fill="x")
         
         ai1_var = tk.StringVar(value="alphabeta")
         tk.Radiobutton(ai1_frame, text="Alpha-Beta Pruning", variable=ai1_var, 
-                      value="alphabeta", font=("Arial", 11)).pack(anchor="w")
+                      value="alphabeta", font=("Arial", 11), bg="#f8f9fa", fg="#2c3e50").pack(anchor="w")
         tk.Radiobutton(ai1_frame, text="Minimax", variable=ai1_var, 
-                      value="minimax", font=("Arial", 11)).pack(anchor="w")
+                      value="minimax", font=("Arial", 11), bg="#f8f9fa", fg="#2c3e50").pack(anchor="w")
         
-        ai2_frame = tk.LabelFrame(self.root, text="AI 2 (O)", font=("Arial", 12, "bold"),
-                                 padx=20, pady=15)
-        ai2_frame.pack(pady=10, padx=50, fill="x")
+        ai2_frame = tk.LabelFrame(center_frame, text="AI 2 (O)", font=("Arial", 12, "bold"),
+                                 padx=20, pady=15, bg="#f8f9fa", fg="#2c3e50")
+        ai2_frame.pack(pady=10, fill="x")
         
         ai2_var = tk.StringVar(value="alphabeta")
         tk.Radiobutton(ai2_frame, text="Alpha-Beta Pruning", variable=ai2_var, 
-                      value="alphabeta", font=("Arial", 11)).pack(anchor="w")
+                      value="alphabeta", font=("Arial", 11), bg="#f8f9fa", fg="#2c3e50").pack(anchor="w")
         tk.Radiobutton(ai2_frame, text="Minimax", variable=ai2_var, 
-                      value="minimax", font=("Arial", 11)).pack(anchor="w")
+                      value="minimax", font=("Arial", 11), bg="#f8f9fa", fg="#2c3e50").pack(anchor="w")
         
-        start_label = tk.Label(self.root, text="Who starts?", 
-                              font=("Arial", 14), fg="#34495e")
-        start_label.pack(pady=10)
+        start_label = tk.Label(center_frame, text="Who starts?", 
+                              font=("Arial", 14), fg="#34495e", bg="#f8f9fa")
+        start_label.pack(pady=(10, 5))
         
         first_var = tk.StringVar(value="X")
-        tk.Radiobutton(self.root, text="AI 1 (X)", variable=first_var, 
-                      value="X", font=("Arial", 12)).pack()
-        tk.Radiobutton(self.root, text="AI 2 (O)", variable=first_var, 
-                      value="O", font=("Arial", 12)).pack()
+        tk.Radiobutton(center_frame, text="AI 1 (X)", variable=first_var, 
+                      value="X", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
+        tk.Radiobutton(center_frame, text="AI 2 (O)", variable=first_var, 
+                      value="O", font=("Arial", 12), bg="#f8f9fa", fg="#2c3e50").pack()
         
-        start_btn = tk.Button(self.root, text="Start Game", font=("Arial", 14, "bold"),
-                             bg="#27ae60", fg="white", width=15, height=2,
-                             command=lambda: self.start_aivai_game(ai1_var.get(), 
-                                                                   ai2_var.get(), 
-                                                                   first_var.get()))
+        start_btn = tk.Label(center_frame, text="Start Game", font=("Arial", 14, "bold"),
+                            bg="#27ae60", fg="white", width=15, height=2,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        start_btn.bind("<Button-1>", lambda e: self.start_aivai_game(ai1_var.get(), 
+                                                                      ai2_var.get(), 
+                                                                      first_var.get()))
+        start_btn.bind("<Enter>", lambda e: e.widget.config(bg="#229954"))
+        start_btn.bind("<Leave>", lambda e: e.widget.config(bg="#27ae60"))
         start_btn.pack(pady=20)
         
-        tk.Button(self.root, text="Back", font=("Arial", 10),
-                 command=self.show_mode_selection).pack()
+        back_btn = tk.Label(center_frame, text="Back", font=("Arial", 12),
+                            bg="#6c757d", fg="white", width=10, height=1,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        back_btn.bind("<Button-1>", lambda e: self.show_mode_selection())
+        back_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5a6268"))
+        back_btn.bind("<Leave>", lambda e: e.widget.config(bg="#6c757d"))
+        back_btn.pack()
     
     def start_hvh_game(self, first_player):
         self.current_player = first_player
@@ -197,76 +256,106 @@ class TicTacToeUI:
         
         self.game_active = True
         
-        main_frame = tk.Frame(self.root)
+        main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
-        top_frame = tk.Frame(main_frame)
+        top_frame = tk.Frame(main_frame, bg="#f8f9fa")
         top_frame.pack(fill="x", pady=(0, 15))
         
         title = tk.Label(top_frame, text="Tic-Tac-Toe", 
-                        font=("Arial", 20, "bold"), fg="#2c3e50")
-        title.pack(side="left")
+                        font=("Arial", 20, "bold"), fg="#2c3e50", bg="#f8f9fa")
+        title.pack()
         
-        self.turn_label = tk.Label(top_frame, text=f"Turn: {self.get_player_name()}", 
-                                   font=("Arial", 16, "bold"), fg="#e74c3c")
-        self.turn_label.pack(side="right")
-        
-        content_frame = tk.Frame(main_frame)
+        content_frame = tk.Frame(main_frame, bg="#f8f9fa")
         content_frame.pack(fill="both", expand=True)
         
-        board_frame = tk.Frame(content_frame)
-        board_frame.pack(side="left", padx=(0, 20))
+        # Left side frame for board and turn label
+        left_frame = tk.Frame(content_frame, bg="#f8f9fa")
+        left_frame.pack(side="left", padx=(0, 20))
+        
+        # Turn label above the board
+        self.turn_label = tk.Label(left_frame, text=f"Turn: {self.get_player_name()}", 
+                                   font=("Arial", 16, "bold"), fg=self.get_turn_color(), bg="#f8f9fa")
+        self.turn_label.pack(pady=(0, 10))
+        
+        board_frame = tk.Frame(left_frame, bg="#f8f9fa")
+        board_frame.pack()
         
         self.buttons = []
         for row in range(3):
             button_row = []
             for col in range(3):
-                btn = tk.Button(board_frame, text="", font=("Arial", 40, "bold"),
-                              width=4, height=2, bg="#ecf0f1",
-                              command=lambda r=row, c=col: self.make_move(r, c))
+                btn = tk.Label(board_frame, text="", font=("Arial", 45, "bold"),
+                              width=4, height=2, bg="white", fg="#2c3e50",
+                              cursor="hand2", relief="solid", borderwidth=2)
+                btn.bind("<Button-1>", lambda e, r=row, c=col: self.make_move(r, c))
+                btn.bind("<Enter>", lambda e: e.widget.config(bg="#f8f9fa") if e.widget.cget("text") == "" else None)
+                btn.bind("<Leave>", lambda e: e.widget.config(bg="white") if e.widget.cget("text") == "" else None)
                 btn.grid(row=row, column=col, padx=2, pady=2)
                 button_row.append(btn)
             self.buttons.append(button_row)
         
-        metrics_frame = tk.LabelFrame(content_frame, text="Performance Metrics", 
-                                     font=("Arial", 14, "bold"), padx=15, pady=15)
-        metrics_frame.pack(side="right", fill="both", expand=True)
+        # Right side frame to center metrics frame
+        right_frame = tk.Frame(content_frame, bg="#f8f9fa")
+        right_frame.pack(side="right", fill="both", expand=True)
+        
+        metrics_frame = tk.LabelFrame(right_frame, text="Performance Metrics", 
+                                     font=("Arial", 16, "bold"), padx=22, pady=22,
+                                     width=320, height=320, bg="#f8f9fa", fg="#2c3e50")
+        metrics_frame.place(relx=0.5, rely=0.5, anchor="center")
+        metrics_frame.pack_propagate(False)
         
         algo_name = self.get_current_algorithm_name()
         if algo_name:
-            algo_label = tk.Label(metrics_frame, text=algo_name, 
-                                 font=("Arial", 12, "bold"), 
-                                 fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6")
-            algo_label.pack(pady=(0, 10))
+            self.algo_label = tk.Label(metrics_frame, text=algo_name, 
+                                      font=("Arial", 14, "bold"), 
+                                      fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6",
+                                      bg="#f8f9fa")
+            self.algo_label.pack(pady=(0, 15))
+        else:
+            self.algo_label = None
         
         tk.Label(metrics_frame, text="Decision Time:", 
-                font=("Arial", 11), fg="#34495e").pack(anchor="w")
+                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
         self.time_label = tk.Label(metrics_frame, text="0ms", 
-                                   font=("Arial", 11, "bold"), fg="#27ae60")
-        self.time_label.pack(anchor="w", pady=(0, 10))
+                                   font=("Arial", 13, "bold"), fg="#27ae60", bg="#f8f9fa")
+        self.time_label.pack(anchor="w", pady=(0, 15))
         
         tk.Label(metrics_frame, text="Nodes Explored:", 
-                font=("Arial", 11), fg="#34495e").pack(anchor="w")
+                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
         self.nodes_label = tk.Label(metrics_frame, text="0", 
-                                    font=("Arial", 11, "bold"), fg="#2980b9")
-        self.nodes_label.pack(anchor="w", pady=(0, 10))
+                                    font=("Arial", 13, "bold"), fg="#2980b9", bg="#f8f9fa")
+        self.nodes_label.pack(anchor="w", pady=(0, 15))
         
         tk.Label(metrics_frame, text="Pruning Efficiency:", 
-                font=("Arial", 11), fg="#34495e").pack(anchor="w")
+                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
         self.pruning_label = tk.Label(metrics_frame, text="N/A", 
-                                      font=("Arial", 11, "bold"), fg="#e67e22")
+                                      font=("Arial", 13, "bold"), fg="#e67e22", bg="#f8f9fa")
         self.pruning_label.pack(anchor="w")
         
-        button_frame = tk.Frame(main_frame)
-        button_frame.pack(pady=15)
+        # Bottom frame to center buttons vertically in remaining space
+        bottom_frame = tk.Frame(main_frame, bg="#f8f9fa")
+        bottom_frame.pack(fill="both", expand=True)
         
-        tk.Button(button_frame, text="Restart Game", font=("Arial", 11),
-                 bg="#f39c12", fg="white", width=12,
-                 command=self.restart_game).pack(side="left", padx=5)
+        # Button container frame centered in bottom space
+        button_container = tk.Frame(bottom_frame, bg="#f8f9fa")
+        button_container.place(relx=0.5, rely=0.5, anchor="center")
         
-        tk.Button(button_frame, text="Change Mode", font=("Arial", 11),
-                 bg="#95a5a6", fg="white", width=12,
-                 command=self.change_mode).pack(side="left", padx=5)
+        restart_btn = tk.Label(button_container, text="Restart Game", font=("Arial", 14),
+                              bg="#f39c12", fg="white", width=15, height=2,
+                              cursor="hand2", relief="raised", borderwidth=2)
+        restart_btn.bind("<Button-1>", lambda e: self.restart_game())
+        restart_btn.bind("<Enter>", lambda e: e.widget.config(bg="#e67e22"))
+        restart_btn.bind("<Leave>", lambda e: e.widget.config(bg="#f39c12"))
+        restart_btn.pack(side="left", padx=10)
+        
+        mode_btn = tk.Label(button_container, text="Change Mode", font=("Arial", 14),
+                            bg="#95a5a6", fg="white", width=15, height=2,
+                            cursor="hand2", relief="raised", borderwidth=2)
+        mode_btn.bind("<Button-1>", lambda e: self.change_mode())
+        mode_btn.bind("<Enter>", lambda e: e.widget.config(bg="#7f8c8d"))
+        mode_btn.bind("<Leave>", lambda e: e.widget.config(bg="#95a5a6"))
+        mode_btn.pack(side="left", padx=10)
     
     def get_player_name(self):
         if self.game_mode == "HvH":
@@ -289,6 +378,9 @@ class TicTacToeUI:
         
         return "Alpha-Beta Pruning" if algo == "alphabeta" else "Minimax Algorithm"
     
+    def get_turn_color(self):
+        return "#e74c3c" if self.current_player == 'X' else "#3498db"
+    
     def is_ai_turn(self):
         if self.game_mode == "HvH":
             return False
@@ -307,12 +399,13 @@ class TicTacToeUI:
         
         self.board[row][col] = self.current_player
         self.update_button(row, col)
+        self.root.update()  # Force UI update
         
         if self.check_game_over():
             return
         
         self.current_player = 'O' if self.current_player == 'X' else 'X'
-        self.turn_label.config(text=f"Turn: {self.get_player_name()}")
+        self.turn_label.config(text=f"Turn: {self.get_player_name()}", fg=self.get_turn_color())
         
         if self.game_mode == "HvAI" and self.is_ai_turn():
             self.root.after(500, self.ai_make_move)
@@ -340,16 +433,24 @@ class TicTacToeUI:
             self.board[row][col] = self.current_player
             self.update_button(row, col)
             self.update_metrics()
+            self.root.update()  # Force UI update
             
             if self.check_game_over():
                 return
             
             self.current_player = 'O' if self.current_player == 'X' else 'X'
-            self.turn_label.config(text=f"Turn: {self.get_player_name()}")
+            self.turn_label.config(text=f"Turn: {self.get_player_name()}", fg=self.get_turn_color())
         
     def update_metrics(self):
         self.time_label.config(text=f"{self.decision_time:.0f}ms")
         self.nodes_label.config(text=f"{self.nodes_explored}")
+        
+        # Update algorithm label if it exists
+        if self.algo_label:
+            algo_name = self.get_current_algorithm_name()
+            if algo_name:
+                self.algo_label.config(text=algo_name,
+                                      fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6")
         
         algo = None
         if self.game_mode == "HvAI":
@@ -375,8 +476,10 @@ class TicTacToeUI:
     def update_button(self, row, col):
         symbol = self.board[row][col]
         color = "#e74c3c" if symbol == 'X' else "#3498db"
-        self.buttons[row][col].config(text=symbol, fg=color, 
-                                      disabledforeground=color, state="disabled")
+        self.buttons[row][col].config(text=symbol, fg=color)
+        self.buttons[row][col].unbind("<Button-1>")
+        self.buttons[row][col].unbind("<Enter>")
+        self.buttons[row][col].unbind("<Leave>")
     
     def check_game_over(self):
         if utility(self.board, 'X'):
