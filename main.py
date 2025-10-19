@@ -12,7 +12,7 @@ class TicTacToeUI:
         self.root.title("Tic-Tac-Toe with AI")
         self.root.geometry("800x700")
         self.root.resizable(False, False)
-        self.root.configure(bg="#f8f9fa")  # Light gray background
+        self.root.configure(bg="#f8f9fa")  
         
         self.reset_game_state()
         self.show_mode_selection()
@@ -37,11 +37,9 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        # Main container frame to center content
         main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(expand=True, fill="both")
         
-        # Center frame for content
         center_frame = tk.Frame(main_frame, bg="#f8f9fa")
         center_frame.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -84,11 +82,9 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        # Main container frame to center content
         main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(expand=True, fill="both")
         
-        # Center frame for content
         center_frame = tk.Frame(main_frame, bg="#f8f9fa")
         center_frame.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -123,11 +119,9 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        # Main container frame to center content
         main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(expand=True, fill="both")
         
-        # Center frame for content
         center_frame = tk.Frame(main_frame, bg="#f8f9fa")
         center_frame.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -175,11 +169,9 @@ class TicTacToeUI:
         for widget in self.root.winfo_children():
             widget.destroy()
         
-        # Main container frame to center content
         main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(expand=True, fill="both")
         
-        # Center frame for content
         center_frame = tk.Frame(main_frame, bg="#f8f9fa")
         center_frame.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -276,11 +268,9 @@ class TicTacToeUI:
         content_frame = tk.Frame(main_frame, bg="#f8f9fa")
         content_frame.pack(fill="both", expand=True)
         
-        # Left side frame for board and turn label
         left_frame = tk.Frame(content_frame, bg="#f8f9fa")
         left_frame.pack(side="left", padx=(0, 20))
         
-        # Turn label above the board
         self.turn_label = tk.Label(left_frame, text=f"Turn: {self.get_player_name()}", 
                                    font=("Arial", 16, "bold"), fg=self.get_turn_color(), bg="#f8f9fa")
         self.turn_label.pack(pady=(0, 10))
@@ -302,9 +292,7 @@ class TicTacToeUI:
                 button_row.append(btn)
             self.buttons.append(button_row)
         
-        # Only show performance metrics for AI games
         if self.game_mode in ["HvAI", "AIvAI"]:
-            # Right side frame to center metrics frame
             right_frame = tk.Frame(content_frame, bg="#f8f9fa")
             right_frame.pack(side="right", fill="both", expand=True)
             
@@ -342,7 +330,6 @@ class TicTacToeUI:
                                           font=("Arial", 13, "bold"), fg="#e67e22", bg="#f8f9fa")
             self.pruning_label.pack(anchor="w", pady=(0, 15))
             
-            # Export CSV button
             export_btn = tk.Label(metrics_frame, text="Export CSV", font=("Arial", 12),
                                  bg="#3498db", fg="white", width=15, height=2,
                                  cursor="hand2", relief="raised", borderwidth=2)
@@ -351,17 +338,14 @@ class TicTacToeUI:
             export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#3498db"))
             export_btn.pack(pady=(10, 0))
         else:
-            # For Human vs Human, initialize labels as None to avoid errors
             self.algo_label = None
             self.time_label = None
             self.nodes_label = None
             self.pruning_label = None
         
-        # Bottom frame to center buttons vertically in remaining space
         bottom_frame = tk.Frame(main_frame, bg="#f8f9fa")
         bottom_frame.pack(fill="both", expand=True)
         
-        # Button container frame centered in bottom space
         button_container = tk.Frame(bottom_frame, bg="#f8f9fa")
         button_container.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -424,7 +408,6 @@ class TicTacToeUI:
         self.board[row][col] = self.current_player
         self.move_number += 1
         
-        # Track move data
         move_data = {
             'game_id': id(self),
             'move_number': self.move_number,
@@ -439,7 +422,7 @@ class TicTacToeUI:
         self.game_data.append(move_data)
         
         self.update_button(row, col)
-        self.root.update()  # Force UI update
+        self.root.update()
         
         if self.check_game_over():
             return
@@ -473,7 +456,6 @@ class TicTacToeUI:
             self.board[row][col] = self.current_player
             self.move_number += 1
             
-            # Track move data
             algo_name = self.get_current_algorithm_name()
             pruning_eff = 'N/A'
             if self.ai1_algorithm == "alphabeta" and (self.nodes_explored + self.nodes_pruned) > 0:
@@ -494,7 +476,7 @@ class TicTacToeUI:
             
             self.update_button(row, col)
             self.update_metrics()
-            self.root.update()  # Force UI update
+            self.root.update()  
             
             if self.check_game_over():
                 return
@@ -503,13 +485,11 @@ class TicTacToeUI:
             self.turn_label.config(text=f"Turn: {self.get_player_name()}", fg=self.get_turn_color())
         
     def update_metrics(self):
-        # Only update metrics if labels exist (AI games only)
         if self.time_label:
             self.time_label.config(text=f"{self.decision_time:.0f}ms")
         if self.nodes_label:
             self.nodes_label.config(text=f"{self.nodes_explored}")
         
-        # Update algorithm label if it exists
         if self.algo_label:
             algo_name = self.get_current_algorithm_name()
             if algo_name:
@@ -599,11 +579,9 @@ class TicTacToeUI:
             messagebox.showwarning("No Data", "No game data to export!")
             return
         
-        # Generate default filename with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         default_filename = f"tictactoe_game_{timestamp}.csv"
         
-        # Ask user for save location
         file_path = filedialog.asksaveasfilename(
             defaultextension=".csv",
             filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
