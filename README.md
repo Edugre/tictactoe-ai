@@ -5,8 +5,7 @@ This project implements an AI player for Tic-Tac-Toe using **Minimax** and **Alp
 
 To run the program:
 `python main.py`
-Using Python 3.x. A prebuilt executable is also available at:
-`dist/tic-tac-toe` 
+Using Python 3.x.
 
 ## Task 
 Tic-Tac-Toe is a two-player game on a 3×3 board.
