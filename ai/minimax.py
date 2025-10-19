@@ -1,28 +1,39 @@
-def minimax(state, depth, maxPlayer):
+from ai.state_utils import normalize
+
+def minimax(state, depth, maxPlayer, cache=None):
+    if cache is None:
+        cache = {}
+
+    key = normalize(state)
+    if key in cache:
+        return cache[key]
+
     if is_terminal(state) or depth == 0:
-        return evaluate(state)
+        score = evaluate(state)
+        cache[key] = score
+
+        return score
 
     if maxPlayer:
         bestScore = float('-inf') 
         
         for move in actions(state):
             result(state, move, 'X')
-            score = minimax(state, depth - 1, False)
+            score = minimax(state, depth - 1, False, cache)
             undo_move(state, move)
             bestScore = max(bestScore, score)
-        
-        return bestScore
     
     else:
         bestScore = float('inf')
 
         for move in actions(state):
             result(state, move, 'O')
-            score = minimax(state, depth - 1, True)
+            score = minimax(state, depth - 1, True, cache)
             undo_move(state, move)
             bestScore = min(bestScore, score)
 
-        return bestScore
+    cache[key] = bestScore
+    return bestScore
 
 def utility(state, player):
     for row in range(3):

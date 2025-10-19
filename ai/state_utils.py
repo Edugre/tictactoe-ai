@@ -7,7 +7,9 @@ def normalize(state):
         transformations.append(flip_horizontal(current))
         current = rotate_90(current)
     
-    return min(transformations, key=state_to_tuple)
+    # Return tuple form for dictionary hashing
+    canonical_state = min(transformations, key=state_to_tuple)
+    return state_to_tuple(canonical_state)
 
 
 def state_to_tuple(s):
