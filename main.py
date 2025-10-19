@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 import time
-from ai.game_utils import utility, is_terminal, actions, result, undo_move
+from ai.game_utils import utility, is_terminal
+from ai.ai_player import get_best_move_with_metrics
 
 class TicTacToeUI:
     def __init__(self, root):
@@ -328,7 +329,8 @@ class TicTacToeUI:
         else:
             use_alphabeta = self.ai1_algorithm == "alphabeta"
         
-        best_move = self.get_best_move_with_metrics(use_alphabeta)
+        best_move, self.nodes_explored, self.nodes_pruned = get_best_move_with_metrics(
+            self.board, 9, self.current_player, use_alphabeta)
         
         end_time = time.time()
         self.decision_time = (end_time - start_time) * 1000
@@ -344,116 +346,7 @@ class TicTacToeUI:
             
             self.current_player = 'O' if self.current_player == 'X' else 'X'
             self.turn_label.config(text=f"Turn: {self.get_player_name()}")
-    
-    def get_best_move_with_metrics(self, use_alphabeta):
-        self.nodes_explored = 0
-        self.nodes_pruned = 0
         
-        best_move = None
-        best_score = float('-inf') if self.current_player == 'X' else float('inf')
-        
-        possible_moves = actions(self.board)
-        
-        for move in possible_moves:
-            result(self.board, move, self.current_player)
-            
-            if use_alphabeta:
-                score, nodes, pruned = self.alphabeta_with_count(
-                    self.board, 9, self.current_player == 'O', 
-                    float('-inf'), float('inf'))
-                self.nodes_explored += nodes
-                self.nodes_pruned += pruned
-            else:
-                score, nodes = self.minimax_with_count(
-                    self.board, 9, self.current_player == 'O')
-                self.nodes_explored += nodes
-            
-            undo_move(self.board, move)
-            
-            if (self.current_player == 'X' and score > best_score) or \
-               (self.current_player == 'O' and score < best_score):
-                best_score = score
-                best_move = move
-        
-        return best_move
-    
-    def minimax_with_count(self, state, depth, maxPlayer):
-        nodes = 1
-        
-        if is_terminal(state) or depth == 0:
-            if utility(state, 'X'):
-                return 10, nodes
-            elif utility(state, 'O'):
-                return -10, nodes
-            else:
-                return 0, nodes
-        
-        possible_moves = actions(state)
-        
-        if maxPlayer:
-            bestScore = float('-inf')
-            for move in possible_moves:
-                result(state, move, 'X')
-                score, child_nodes = self.minimax_with_count(state, depth - 1, False)
-                undo_move(state, move)
-                nodes += child_nodes
-                bestScore = max(bestScore, score)
-        else:
-            bestScore = float('inf')
-            for move in possible_moves:
-                result(state, move, 'O')
-                score, child_nodes = self.minimax_with_count(state, depth - 1, True)
-                undo_move(state, move)
-                nodes += child_nodes
-                bestScore = min(bestScore, score)
-        
-        return bestScore, nodes
-    
-    def alphabeta_with_count(self, state, depth, maxPlayer, alpha, beta):
-        nodes = 1
-        pruned = 0
-        
-        if is_terminal(state) or depth == 0:
-            if utility(state, 'X'):
-                return 10, nodes, pruned
-            elif utility(state, 'O'):
-                return -10, nodes, pruned
-            else:
-                return 0, nodes, pruned
-        
-        possible_moves = actions(state)
-        
-        if maxPlayer:
-            bestScore = float('-inf')
-            for i, move in enumerate(possible_moves):
-                result(state, move, 'X')
-                score, child_nodes, child_pruned = self.alphabeta_with_count(
-                    state, depth - 1, False, alpha, beta)
-                undo_move(state, move)
-                nodes += child_nodes
-                pruned += child_pruned
-                bestScore = max(bestScore, score)
-                alpha = max(alpha, score)
-                if beta <= alpha:
-                    pruned += len(possible_moves) - i - 1
-                    break
-        else:
-            bestScore = float('inf')
-            for i, move in enumerate(possible_moves):
-                result(state, move, 'O')
-                score, child_nodes, child_pruned = self.alphabeta_with_count(
-                    state, depth - 1, True, alpha, beta)
-                undo_move(state, move)
-                nodes += child_nodes
-                pruned += child_pruned
-                bestScore = min(bestScore, score)
-                beta = min(beta, score)
-                if beta <= alpha:
-                    pruned += len(possible_moves) - i - 1
-                    break
-        
-        return bestScore, nodes, pruned
-    
     def update_metrics(self):
         self.time_label.config(text=f"{self.decision_time:.0f}ms")
         self.nodes_label.config(text=f"{self.nodes_explored}")
