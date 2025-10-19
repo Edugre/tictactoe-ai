@@ -1,5 +1,5 @@
 from ai.state_utils import normalize
-from ai.minimax import utility, is_terminal, evaluate, actions, result, undo_move, is_draw
+from ai.game_utils import utility, is_terminal, evaluate, actions, result, undo_move
 
 def alphabeta(state, depth, maxPlayer, alpha, beta, cache=None):
     if cache is None:

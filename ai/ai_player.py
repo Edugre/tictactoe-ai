@@ -1,4 +1,5 @@
-from ai.minimax import actions, result, minimax, undo_move
+from ai.game_utils import actions, result, undo_move
+from ai.minimax import minimax
 from ai.alphabeta import alphabeta
 
 def get_best_move(state, depth, player, use_alphabeta=True):
