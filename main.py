@@ -269,7 +269,10 @@ class TicTacToeUI:
         content_frame.pack(fill="both", expand=True)
         
         left_frame = tk.Frame(content_frame, bg="#f8f9fa")
-        left_frame.pack(side="left", padx=(0, 20))
+        if self.game_mode in ["HvAI", "AIvAI"]:
+            left_frame.pack(side="left", padx=(0, 20))
+        else:
+            left_frame.pack(expand=True)
         
         self.turn_label = tk.Label(left_frame, text=f"Turn: {self.get_player_name()}", 
                                    font=("Arial", 16, "bold"), fg=self.get_turn_color(), bg="#f8f9fa")
@@ -364,6 +367,8 @@ class TicTacToeUI:
         mode_btn.bind("<Enter>", lambda e: e.widget.config(bg="#7f8c8d"))
         mode_btn.bind("<Leave>", lambda e: e.widget.config(bg="#95a5a6"))
         mode_btn.pack(side="left", padx=10)
+
+        self.root.update_idletasks()
     
     def get_player_name(self):
         if self.game_mode == "HvH":
