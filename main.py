@@ -1,6 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 import time
+import csv
+from datetime import datetime
 from ai.game_utils import utility, is_terminal
 from ai.ai_player import get_best_move
 
@@ -27,6 +29,9 @@ class TicTacToeUI:
         self.nodes_pruned = 0
         self.decision_time = 0
         self.buttons = []
+        self.game_data = []
+        self.game_start_time = None
+        self.move_number = 0
     
     def show_mode_selection(self):
         for widget in self.root.winfo_children():
@@ -255,6 +260,8 @@ class TicTacToeUI:
             widget.destroy()
         
         self.game_active = True
+        self.game_start_time = datetime.now()
+        self.move_number = 0
         
         main_frame = tk.Frame(self.root, bg="#f8f9fa")
         main_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -295,43 +302,60 @@ class TicTacToeUI:
                 button_row.append(btn)
             self.buttons.append(button_row)
         
-        # Right side frame to center metrics frame
-        right_frame = tk.Frame(content_frame, bg="#f8f9fa")
-        right_frame.pack(side="right", fill="both", expand=True)
-        
-        metrics_frame = tk.LabelFrame(right_frame, text="Performance Metrics", 
-                                     font=("Arial", 16, "bold"), padx=22, pady=22,
-                                     width=320, height=320, bg="#f8f9fa", fg="#2c3e50")
-        metrics_frame.place(relx=0.5, rely=0.5, anchor="center")
-        metrics_frame.pack_propagate(False)
-        
-        algo_name = self.get_current_algorithm_name()
-        if algo_name:
-            self.algo_label = tk.Label(metrics_frame, text=algo_name, 
-                                      font=("Arial", 14, "bold"), 
-                                      fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6",
-                                      bg="#f8f9fa")
-            self.algo_label.pack(pady=(0, 15))
+        # Only show performance metrics for AI games
+        if self.game_mode in ["HvAI", "AIvAI"]:
+            # Right side frame to center metrics frame
+            right_frame = tk.Frame(content_frame, bg="#f8f9fa")
+            right_frame.pack(side="right", fill="both", expand=True)
+            
+            metrics_frame = tk.LabelFrame(right_frame, text="Performance Metrics", 
+                                         font=("Arial", 16, "bold"), padx=22, pady=22,
+                                         width=320, height=320, bg="#f8f9fa", fg="#2c3e50")
+            metrics_frame.place(relx=0.5, rely=0.5, anchor="center")
+            metrics_frame.pack_propagate(False)
+            
+            algo_name = self.get_current_algorithm_name()
+            if algo_name:
+                self.algo_label = tk.Label(metrics_frame, text=algo_name, 
+                                          font=("Arial", 14, "bold"), 
+                                          fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6",
+                                          bg="#f8f9fa")
+                self.algo_label.pack(pady=(0, 15))
+            else:
+                self.algo_label = None
+            
+            tk.Label(metrics_frame, text="Decision Time:", 
+                    font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
+            self.time_label = tk.Label(metrics_frame, text="0ms", 
+                                       font=("Arial", 13, "bold"), fg="#27ae60", bg="#f8f9fa")
+            self.time_label.pack(anchor="w", pady=(0, 15))
+            
+            tk.Label(metrics_frame, text="Nodes Explored:", 
+                    font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
+            self.nodes_label = tk.Label(metrics_frame, text="0", 
+                                        font=("Arial", 13, "bold"), fg="#2980b9", bg="#f8f9fa")
+            self.nodes_label.pack(anchor="w", pady=(0, 15))
+            
+            tk.Label(metrics_frame, text="Pruning Efficiency:", 
+                    font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
+            self.pruning_label = tk.Label(metrics_frame, text="N/A", 
+                                          font=("Arial", 13, "bold"), fg="#e67e22", bg="#f8f9fa")
+            self.pruning_label.pack(anchor="w", pady=(0, 15))
+            
+            # Export CSV button
+            export_btn = tk.Label(metrics_frame, text="Export CSV", font=("Arial", 12),
+                                 bg="#3498db", fg="white", width=15, height=2,
+                                 cursor="hand2", relief="raised", borderwidth=2)
+            export_btn.bind("<Button-1>", lambda e: self.export_game_data())
+            export_btn.bind("<Enter>", lambda e: e.widget.config(bg="#2980b9"))
+            export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#3498db"))
+            export_btn.pack(pady=(10, 0))
         else:
+            # For Human vs Human, initialize labels as None to avoid errors
             self.algo_label = None
-        
-        tk.Label(metrics_frame, text="Decision Time:", 
-                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
-        self.time_label = tk.Label(metrics_frame, text="0ms", 
-                                   font=("Arial", 13, "bold"), fg="#27ae60", bg="#f8f9fa")
-        self.time_label.pack(anchor="w", pady=(0, 15))
-        
-        tk.Label(metrics_frame, text="Nodes Explored:", 
-                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
-        self.nodes_label = tk.Label(metrics_frame, text="0", 
-                                    font=("Arial", 13, "bold"), fg="#2980b9", bg="#f8f9fa")
-        self.nodes_label.pack(anchor="w", pady=(0, 15))
-        
-        tk.Label(metrics_frame, text="Pruning Efficiency:", 
-                font=("Arial", 13), fg="#34495e", bg="#f8f9fa").pack(anchor="w")
-        self.pruning_label = tk.Label(metrics_frame, text="N/A", 
-                                      font=("Arial", 13, "bold"), fg="#e67e22", bg="#f8f9fa")
-        self.pruning_label.pack(anchor="w")
+            self.time_label = None
+            self.nodes_label = None
+            self.pruning_label = None
         
         # Bottom frame to center buttons vertically in remaining space
         bottom_frame = tk.Frame(main_frame, bg="#f8f9fa")
@@ -398,6 +422,22 @@ class TicTacToeUI:
             return
         
         self.board[row][col] = self.current_player
+        self.move_number += 1
+        
+        # Track move data
+        move_data = {
+            'game_id': id(self),
+            'move_number': self.move_number,
+            'player': self.get_player_name(),
+            'algorithm': 'Human',
+            'position': f'{row},{col}',
+            'decision_time_ms': 0,
+            'nodes_explored': 0,
+            'nodes_pruned': 0,
+            'pruning_efficiency': 'N/A'
+        }
+        self.game_data.append(move_data)
+        
         self.update_button(row, col)
         self.root.update()  # Force UI update
         
@@ -431,6 +471,27 @@ class TicTacToeUI:
         if best_move:
             row, col = best_move
             self.board[row][col] = self.current_player
+            self.move_number += 1
+            
+            # Track move data
+            algo_name = self.get_current_algorithm_name()
+            pruning_eff = 'N/A'
+            if self.ai1_algorithm == "alphabeta" and (self.nodes_explored + self.nodes_pruned) > 0:
+                pruning_eff = f"{(self.nodes_pruned / (self.nodes_explored + self.nodes_pruned)) * 100:.1f}%"
+            
+            move_data = {
+                'game_id': id(self),
+                'move_number': self.move_number,
+                'player': self.get_player_name(),
+                'algorithm': algo_name,
+                'position': f'{row},{col}',
+                'decision_time_ms': f'{self.decision_time:.0f}',
+                'nodes_explored': self.nodes_explored,
+                'nodes_pruned': self.nodes_pruned,
+                'pruning_efficiency': pruning_eff
+            }
+            self.game_data.append(move_data)
+            
             self.update_button(row, col)
             self.update_metrics()
             self.root.update()  # Force UI update
@@ -442,8 +503,11 @@ class TicTacToeUI:
             self.turn_label.config(text=f"Turn: {self.get_player_name()}", fg=self.get_turn_color())
         
     def update_metrics(self):
-        self.time_label.config(text=f"{self.decision_time:.0f}ms")
-        self.nodes_label.config(text=f"{self.nodes_explored}")
+        # Only update metrics if labels exist (AI games only)
+        if self.time_label:
+            self.time_label.config(text=f"{self.decision_time:.0f}ms")
+        if self.nodes_label:
+            self.nodes_label.config(text=f"{self.nodes_explored}")
         
         # Update algorithm label if it exists
         if self.algo_label:
@@ -452,17 +516,18 @@ class TicTacToeUI:
                 self.algo_label.config(text=algo_name,
                                       fg="#3498db" if "Alpha-Beta" in algo_name else "#9b59b6")
         
-        algo = None
-        if self.game_mode == "HvAI":
-            algo = self.ai1_algorithm
-        else:
-            algo = self.ai2_algorithm if self.current_player == 'O' else self.ai1_algorithm
-        
-        if algo == "alphabeta" and (self.nodes_explored + self.nodes_pruned) > 0:
-            efficiency = (self.nodes_pruned / (self.nodes_explored + self.nodes_pruned)) * 100
-            self.pruning_label.config(text=f"{efficiency:.1f}%")
-        else:
-            self.pruning_label.config(text="N/A")
+        if self.pruning_label:
+            algo = None
+            if self.game_mode == "HvAI":
+                algo = self.ai1_algorithm
+            else:
+                algo = self.ai2_algorithm if self.current_player == 'O' else self.ai1_algorithm
+            
+            if algo == "alphabeta" and (self.nodes_explored + self.nodes_pruned) > 0:
+                efficiency = (self.nodes_pruned / (self.nodes_explored + self.nodes_pruned)) * 100
+                self.pruning_label.config(text=f"{efficiency:.1f}%")
+            else:
+                self.pruning_label.config(text="N/A")
     
     def ai_vs_ai_step(self):
         if not self.game_active:
@@ -528,6 +593,37 @@ class TicTacToeUI:
             self.root.after(500, self.ai_make_move)
         elif self.game_mode == "AIvAI":
             self.root.after(500, self.ai_vs_ai_step)
+    
+    def export_game_data(self):
+        if not self.game_data:
+            messagebox.showwarning("No Data", "No game data to export!")
+            return
+        
+        # Generate default filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        default_filename = f"tictactoe_game_{timestamp}.csv"
+        
+        # Ask user for save location
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            initialfile=default_filename
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                    fieldnames = ['game_id', 'move_number', 'player', 'algorithm', 'position', 
+                                'decision_time_ms', 'nodes_explored', 'nodes_pruned', 'pruning_efficiency']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    
+                    writer.writeheader()
+                    for move_data in self.game_data:
+                        writer.writerow(move_data)
+                
+                messagebox.showinfo("Export Successful", f"Game data exported to:\n{file_path}")
+            except Exception as e:
+                messagebox.showerror("Export Error", f"Failed to export data:\n{str(e)}")
     
     def change_mode(self):
         self.reset_game_state()
