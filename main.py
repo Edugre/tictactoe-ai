@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 from ai.game_utils import utility, is_terminal
-from ai.ai_player import get_best_move_with_metrics
+from ai.ai_player import get_best_move
 
 class TicTacToeUI:
     def __init__(self, root):
@@ -329,7 +329,7 @@ class TicTacToeUI:
         else:
             use_alphabeta = self.ai1_algorithm == "alphabeta"
         
-        best_move, self.nodes_explored, self.nodes_pruned = get_best_move_with_metrics(
+        best_move, self.nodes_explored, self.nodes_pruned = get_best_move(
             self.board, 9, self.current_player, use_alphabeta)
         
         end_time = time.time()
