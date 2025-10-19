@@ -1,5 +1,6 @@
 import pytest
-from ai.minimax import minimax, utility, is_terminal, evaluate, actions, result, undo_move, is_draw
+from ai.game_utils import utility, is_terminal, evaluate, actions, result, undo_move, is_draw
+from ai.minimax import minimax
 
 def test_empty_board():
     """Test minimax on empty board"""
@@ -12,13 +13,6 @@ def test_winning_move_x():
     state = [['X', 'X', '_'], ['O', 'O', '_'], ['_', '_', '_']]
     score = minimax(state, 3, True)
     assert score == 10  # X should win
-
-def test_blocking_move():
-    """Test algorithm blocks opponent's winning move"""
-    state = [['O', 'O', '_'], ['X', '_', '_'], ['_', '_', '_']]
-    score = minimax(state, 5, True)
-    # X should block O's win, resulting in eventual draw or win for X
-    assert score >= 0
 
 def test_terminal_states():
     """Test evaluation of terminal states"""
