@@ -1,11 +1,12 @@
 # 🕹️ Tic-Tac-Toe AI
 
 ## Introduction
-This project implements an AI player for Tic-Tac-Toe using **Minimax** and **Alpha-Beta Pruning**. The code also includes **state symmetry normalization** (hashing equivalent boards) to avoid re-computing identical positions under rotation/flip. We compare correctness and efficiency between plain Minimax and Alpha-Beta. 
+This project implements an AI player for Tic-Tac-Toe using **Minimax** and **Alpha-Beta Pruning**. The code also includes **state symmetry normalization** (hashing equivalent boards) to avoid re-computing identical positions under rotation/flip. We compare correctness and efficiency between plain Minimax and Alpha-Beta Pruning. 
 
 To run the program:
 `python main.py`
-Using Python 3.x.
+Using Python 3.x. A prebuilt executable is also available at:
+`dist/tic-tac-toe` 
 
 ## Task 
 Tic-Tac-Toe is a two-player game on a 3×3 board.
@@ -40,7 +41,7 @@ The `normalize()` function generates all rotations and reflections of the board 
     -	−10 if O wins
     -	0 if it’s a draw
 -	`actions()` – lists available empty cells.
--	`result()` / undo_move() – simulate and revert moves during AI decision-making.
+-	`result()` / `undo_move()` – simulate and revert moves during AI decision-making.
 
 ## Performance, Discussion & Future Work
 
